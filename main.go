@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"sync"
@@ -78,13 +78,13 @@ func source(out chan<- int, done chan bool) {
 	for scanner.Scan() {
 		data := scanner.Text()
 		if data == "exit" {
-			fmt.Println("The program has finished")
+			log.Println("The program has finished")
 			close(done)
 			return
 		}
 		st, err := strconv.Atoi(data)
 		if err != nil {
-			fmt.Println("There are not integers in input!")
+			log.Println("There are not integers in input!")
 			continue
 		}
 		out <- st
@@ -139,11 +139,16 @@ func consumer(input <-chan []int, done chan bool) {
 	for {
 		select {
 		case data := <-input:
-			fmt.Println("Proccesed data: ", data)
+			log.Println("Proccesed data: ", data)
 		case <-done:
 			return
 		}
 	}
+}
+
+func initLogger() {
+	log.SetOutput(os.Stdout)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 }
 
 func main() {
